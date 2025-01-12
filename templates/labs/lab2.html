@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторная работа 2</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+        .assignment {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .assignment h2 {
+            margin-top: 0;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+        li {
+            margin: 5px 0;
+        }
+        .folder::before {
+            content: "📁";
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        .file::before {
+            content: "📄";
+            margin-right: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Лабораторная работа 2</h1>
+
+    <a href="{% url 'home' %}" class="back-button">Повернутись на головну</a>
+
+    <div class="assignment">
+        <h2>Описание задания</h2>
+        <p>
+            Компания <b>BrokenTiles</b> планирует заняться выкладкой узора из черных и белых плиток в дворах у заможных клиентов.
+            Каждый клиент хочет, чтобы узор, который выкладывается на его дворе, был уникальным и отличался от других, при этом узор должен быть симпатичным.
+        </p>
+        <p>
+            Узор считается симпатичным, если в нем нигде не встречается квадрат 2×2, полностью покрытый плитками одного цвета (черными или белыми).
+        </p>
+        <p>
+            Задача — вычислить, сколько различных симпатичных узоров можно создать для двора размером <b>M×N</b> метров, где M и N — целые числа, определяющие размеры двора. Важно, что узоры, полученные путем сдвига, поворота или отражения, считаются различными.
+        </p>
+        <h3>Входные данные:</h3>
+        <p>
+            Входной файл <b>INPUT.TXT</b> содержит два целых числа <b>M</b> и <b>N</b> (1 ≤ M∙N ≤ 30), задающих размеры двора.
+        </p>
+        <h3>Выходные данные:</h3>
+        <p>
+            В выходном файле <b>OUTPUT.TXT</b> выведите одно число — количество различных симпатичных узоров, которые можно выложить на дворе размером M×N.
+        </p>
+        <h3>Пример:</h3>
+        <table border="1" style="border-collapse: collapse; width: 100%;">
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>INPUT.TXT</th>
+                    <th>OUTPUT.TXT</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>
+                        <pre>
+2 2
+                        </pre>
+                    </td>
+                    <td>
+                        <pre>
+14
+                        </pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>
+                        <pre>
+3 3
+                        </pre>
+                    </td>
+                    <td>
+                        <pre>
+322
+                        </pre>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <ul>
+        {% for folder, values in file_structure.items %}
+            <li>
+                <div class="folder" onclick="toggleVisibility('folder-{{ forloop.counter }}')">
+                    {{ folder|default:"Корневая папка" }}
+                </div>
+                <ul id="folder-{{ forloop.counter }}" class="hidden">
+                    {% for dir in values.dirs %}
+                        <li>
+                            <div class="folder" onclick="toggleVisibility('folder-{{ forloop.counter }}-{{ forloop.parentloop.counter }}')">
+                                {{ dir }}
+                            </div>
+                            <ul id="folder-{{ forloop.counter }}-{{ forloop.parentloop.counter }}" class="hidden">
+                                <!-- Вложенные папки и файлы будут обработаны -->
+                            </ul>
+                        </li>
+                    {% endfor %}
+                    {% for file in values.files %}
+                        <li class="file">
+                            <a href="{% static 'labs/Lab2/'|add:folder|add:'/'|add:file %}">
+                                {{ file }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <script>
+        function toggleVisibility(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.classList.toggle('hidden');
+            }
+        }
+    </script>
+
+    {% if error %}
+        <p style="color: red">{{ error }}</p>
+    {% endif %}
+</body>
+</html>

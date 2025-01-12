@@ -1,0 +1,26 @@
+{% load static %}
+<li>
+    <div class="folder" onclick="toggleVisibility('{{ folder_name|slugify }}')">
+        {{ folder_name|default:"Корневая папка" }}
+    </div>
+    <ul id="{{ folder_name|slugify }}" class="hidden">
+        {% for subfolder in subfolders %}
+            <li>
+                <div class="folder" onclick="toggleVisibility('{{ folder_name|add:'/'|add:subfolder|slugify }}')">
+                    {{ subfolder }}
+                </div>
+                <ul id="{{ folder_name|add:'/'|add:subfolder|slugify }}" class="hidden">
+                    <!-- Вложенные папки рендерятся с помощью include -->
+                    {% include "labs/folder_template.html" with folder_name=folder_name|add:'/'|add:subfolder files=None subfolders=None %}
+                </ul>
+            </li>
+        {% endfor %}
+        {% for file in files %}
+            <li class="file">
+                <a href="{% static 'labs/Lab1/'|add:folder_name|add:'/'|add:file %}">
+                    {{ file }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</li>

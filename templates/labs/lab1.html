@@ -1,0 +1,162 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторная работа 1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+        .assignment {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .assignment h2 {
+            margin-top: 0;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+        li {
+            margin: 5px 0;
+        }
+        .folder::before {
+            content: "📁";
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        .file::before {
+            content: "📄";
+            margin-right: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Лабораторная работа 1</h1>
+
+    <a href="{% url 'home' %}" class="back-button">Повернутись на головну</a>
+
+    <div class="assignment">
+        <h2>Описание задания</h2>
+        <p>
+            Для зберігання двох агресивних рідин <b>A</b> і <b>B</b> використовується ємність з багатошаровою перегородкою,
+            яка виготовляється з наявних листів <b>N</b>. Для кожного листа <i>i</i> (<i>i = 1, …, N</i>) відомий час його розчинення
+            рідиною <b>A</b> – <i>a<sub>i</sub></i> та рідиною <b>B</b> – <i>b<sub>i</sub></i>.
+            Розчинення перегородки кожної рідини відбувається послідовно лист за листом, з постійною швидкістю по товщині листа.
+        </p>
+        <p>
+            Потрібно написати програму проектування такої перегородки, час розчинення якої було б максимальним.
+        </p>
+        <h3>Вхідні дані:</h3>
+        <p>
+            У першому рядку вхідного файлу <b>INPUT.TXT</b> записано число <b>N</b> (<i>1 ≤ N ≤ 256</i>).
+            У кожному з наступних <i>N</i> рядків містяться два позитивні речові числа <b>a<sub>i</sub></b> і <b>b<sub>i</sub></b>,
+            розділені пробілом (числа не перевищують <b>10<sup>6</sup></b> і складаються не більше ніж з 11 значущих цифр).
+        </p>
+        <h3>Вихідні дані:</h3>
+        <p>
+            У перший рядок вихідного файлу <b>OUTPUT.TXT</b> записати час розчинення перегородки з точністю не менше <b>10<sup>-3</sup></b>.
+            У наступному рядку файлу записати номери аркушів у порядку їх розташування від рідини <b>A</b> до рідини <b>B</b>, розділяючи числа пробілами.
+        </p>
+        <h3>Приклад:</h3>
+        <table border="1" style="border-collapse: collapse; width: 100%;">
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>INPUT.TXT</th>
+                    <th>OUTPUT.TXT</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>
+                        <pre>
+4
+1 2
+1 2
+0.5 1.5
+7 3.5
+                        </pre>
+                    </td>
+                    <td>
+                        <pre>
+6.000
+4 2 1 3
+                        </pre>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <ul>
+        {% for folder, values in file_structure.items %}
+            <li>
+                <div class="folder" onclick="toggleVisibility('folder-{{ forloop.counter }}')">
+                    {{ folder|default:"Корневая папка" }}
+                </div>
+                <ul id="folder-{{ forloop.counter }}" class="hidden">
+                    {% for dir in values.dirs %}
+                        <li>
+                            <div class="folder" onclick="toggleVisibility('folder-{{ forloop.counter }}-{{ forloop.parentloop.counter }}')">
+                                {{ dir }}
+                            </div>
+                            <ul id="folder-{{ forloop.counter }}-{{ forloop.parentloop.counter }}" class="hidden">
+                                <!-- Вложенные папки и файлы будут обработаны -->
+                            </ul>
+                        </li>
+                    {% endfor %}
+                    {% for file in values.files %}
+                        <li class="file">
+                            <a href="{% static 'labs/Lab1/'|add:folder|add:'/'|add:file %}">
+                                {{ file }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <script>
+        function toggleVisibility(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.classList.toggle('hidden');
+            }
+        }
+    </script>
+
+    {% if error %}
+        <p style="color: red">{{ error }}</p>
+    {% endif %}
+</body>
+</html>
